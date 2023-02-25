@@ -5,7 +5,9 @@ from gazebo_msgs.srv import SpawnModel
 from gazebo_msgs.srv import SpawnModelRequest
 import math
 from geometry_msgs.msg import Pose
+from geometry_msgs.msg import Quaternion
 import math
+from tf.transformations import quaternion_from_euler
 
 rospack  = rospkg.RosPack()
 pkg_path = rospack.get_path('simulation')
@@ -23,11 +25,30 @@ class ModelSpawner:
 		spawn_req.initial_pose = pose
 		spawn_model(spawn_req)
 #Dummy push
+def rpy2Quat(r=0,p=0,y=0):
+	q = quaternion_from_euler(r,p,y)
+	orientation = Quaternion()
+	orientation.x = q[0]
+	orientation.y = q[1]
+	orientation.z = q[2]
+	orientation.w = q[3]
+	return orientation
+
+def simpleSpawn(name,model,x=0,y=0,z=0,roll=0,pitch=0,yaw=0):
+	modelSpawner = ModelSpawner(name,model)
+	pose = Pose()
+	pose.position.x = x
+	pose.position.y = y
+	pose.position.z = z
+	pose.orientation = rpy2Quat(roll,pitch,yaw)
+	modelSpawner.spawn(pose)
 
 def main():
 	rospy.init_node("c5cam_node")
 	rospy.wait_for_service("/gazebo/spawn_sdf_model")
-
+	cameraModel = 
+	simpleSpawn('cam0','/models/ros_camera/model.sdf',z=20)
+"""
 	angle = 0.5
 	pose = Pose()
 	pose.position.y = -15
@@ -51,9 +72,7 @@ def main():
 	pose.orientation.w = math.cos(angle/2)
 	polo = ModelSpawner('car1','/models/car_polo/model.sdf')
 	polo.spawn(pose)
-
-
-	
+"""
 
 if __name__ == '__main__':
 	main()
