@@ -19,7 +19,7 @@
       <collision name="collision">
         <geometry>
           <box>
-            <size>5 5 5</size>
+            <size>4 4 4</size>
           </box>
         </geometry>
       </collision>
@@ -27,7 +27,7 @@
         <geometry>
           <mesh>
             <uri>model://car_polo/meshes/Polo.dae</uri>
-      	    <scale>0.2 0.2 0.2</scale>
+      	    <scale>0.16 0.16 0.16</scale>
           </mesh>
         </geometry>
       </visual>

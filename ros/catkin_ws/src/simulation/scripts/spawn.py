@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 import rospy
 import rospkg
 from gazebo_msgs.srv import SpawnModel
@@ -7,12 +7,23 @@ import math
 from geometry_msgs.msg import Pose
 from geometry_msgs.msg import Quaternion
 import math
+import numpy
 from tf.transformations import quaternion_from_euler
+import random
 
 rospack  = rospkg.RosPack()
 pkg_path = rospack.get_path('simulation')
 spawn_model = rospy.ServiceProxy('/gazebo/spawn_sdf_model', SpawnModel)
+cameraModel = '/models/ros_camera/model.sdf'
+carPoloModel = '/models/car_polo/model.sdf'
+car46Model = '/models/car_046/model.sdf'
+car144Model = '/models/car_144/model.sdf'
+carLexusModel = '/models/car_lexus/model.sdf'
+carBeetleModel = '/models/car_beetle/model.sdf'
+carModels = [carPoloModel, car46Model, car144Model, carLexusModel, carBeetleModel]
 
+def getRandCarModel():
+	return carModels[random.randint(0,len(carModels)-1)]
 class ModelSpawner:
 	def __init__(self,name,sdf):
 		self.name = name
@@ -46,8 +57,17 @@ def simpleSpawn(name,model,x=0,y=0,z=0,roll=0,pitch=0,yaw=0):
 def main():
 	rospy.init_node("c5cam_node")
 	rospy.wait_for_service("/gazebo/spawn_sdf_model")
-	cameraModel = 
-	simpleSpawn('cam0','/models/ros_camera/model.sdf',z=20)
+	
+	simpleSpawn('cam0',cameraModel, y=35, z=35, pitch=0.9, yaw=-math.pi/2)
+	simpleSpawn('cam1',cameraModel, x=100, y=-35, z=35, pitch=0.9, yaw=math.pi/2)
+	conLen = 7
+	for i in range(conLen):
+		simpleSpawn('car'+str(2*i), carPoloModel, x=0+25*i, y=-16, yaw=-math.pi/2)
+		simpleSpawn('car1'+str(2*i+1), carPoloModel, x=10+25*i, y=-6, yaw=-math.pi/2)
+	#simpleSpawn('cam1',cameraModel, x=40, y=-20, z=20, pitch=0.3, yaw=-0.5)
+	simpleSpawn('car'+str(2*conLen), carPoloModel, x=0+25*conLen, y=-12, yaw=-math.pi/2)
+	simpleSpawn('car1'+str(2*conLen+1), carPoloModel, x=10+25*conLen, y=-10, yaw=-1.2*math.pi/2)
+
 """
 	angle = 0.5
 	pose = Pose()
