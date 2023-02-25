@@ -1,3 +1,4 @@
+S
 # RetenIA
 
 ## Como usar Git y GitHub
@@ -60,7 +61,9 @@ En este [enlace](https://drive.google.com/drive/folders/1rQFvU_iIsVMYDO_vthsNkF4
 - [ ] Agregar todos nuestros contactos.
 
 ## Contactos:
-- Braulio:
+- Braulio Sánchez:
+	>girbraulio94@gmail.com
+	>girbish3 
 	
 - Emmanuel Larralde:
 	> ealarralde@gmail.com
