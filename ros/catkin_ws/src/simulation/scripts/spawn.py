@@ -22,7 +22,7 @@ class ModelSpawner:
 		spawn_req.robot_namespace = self.name
 		spawn_req.initial_pose = pose
 		spawn_model(spawn_req)
-
+#Dummy push
 
 def main():
 	rospy.init_node("c5cam_node")
