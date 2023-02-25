@@ -1,6 +1,7 @@
 # RetenIA
 
 ## DataSet
+** Nunca añadas nada del directorio ./DataSet. Es sólo un placeholder **
 En este [enlace](https://drive.google.com/drive/folders/1rQFvU_iIsVMYDO_vthsNkF4hyJyiXz8w?usp=share_link) se agregarán videos, rosbags y modelos.
 
 ## TODO (cosas por hacer):
