@@ -11,7 +11,9 @@ class Inference:
 		project = rf.workspace().project(case)
 		self.model = project.version(3).model
 	def predict(self,frame):
-		print(self.model.predict(frame, confidence=40, overlap=30).json())
+		M = np.ones(frame.shape, dtype="uint8") * 50
+		img = cv2.add(frame, M)
+		print(self.model.predict(frame, confidence=40, overlap=20).json())
 
 
 class VisionNode:
