@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 import rospy
-import rostopic
 from sensor_msgs.msg import Image
 import vision_utils as vu
 import cv2
+import datetime
 
-AI = vu.MultiInference([('crash-car-detection',3)])#,('fire-ronz9',1)])
+AI = vu.MultiInference([('crash-car-detection',3),('fire-ronz9',1)])
 
 def getTopicsByType(msg_type):
 	topics = rospy.get_published_topics()
@@ -18,9 +18,9 @@ def getTopicsByType(msg_type):
 	return wanted_topics
 
 class DisplayNode:
-	def __init__(self,topic,rate):
+	def __init__(self,topic,period):
 		#id = id+1
-		self.rate = rate
+		self.rate = 1/period
 		self.topic = topic
 		self.subs = rospy.Subscriber(topic, Image, self.onImg, queue_size=1)
 		self.last_time = rospy.Time.now()
@@ -30,14 +30,16 @@ class DisplayNode:
 		if 1/dt > self.rate:
 			return
 		self.last_time = now
+		img_name = self.topic.split('/')[1]
 		frame = vu.bridgeImgMsg(img_msg)
 		if frame is None:
 			return
 		frame = vu.scaleImg(frame)
 		bbxs = AI.inference(frame)
 		for bbx in bbxs:
+			for prediction in bbx:
+				print("Se detecto '{}' en {} @ {}".format(prediction['class'],img_name,datetime.datetime.now()))
 			frame = vu.drawBB(frame,bbx)
-		img_name = self.topic.split('/')[1]
 		cv2.imwrite(img_name+'.jpg',frame)
 		print('Saving {}.jpg'.format(img_name))
 		
@@ -50,7 +52,7 @@ class C5Node:
 
 def main():
 	rospy.init_node("c5_node", anonymous=True)
-	C5Node(1)
+	C5Node(10)
 	try:
 		rospy.spin()
 	except ROSInterruptException:
