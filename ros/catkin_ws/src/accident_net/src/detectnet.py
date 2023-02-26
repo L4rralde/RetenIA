@@ -1,4 +1,4 @@
-#!/home/emmanuel/anaconda3/bin/python
+#!/usr/bin/python3
 import rospy
 import cv2
 from sensor_msgs.msg import Image
@@ -13,27 +13,39 @@ class Inference:
 	def predict(self,frame):
 		print(self.model.predict(frame, confidence=40, overlap=30).json())
 
-
 class VisionNode:
-	def __init__(self, model):
+	def __init__(self, model, rate):
 		self.inference = Inference(model)
-		self.subs = rospy.Subscriber('/sensors/global_camera/image',Image,self.onImage,queue_size=1)
-		
-	def onImage(self,imgMsg):
+		self.subs = rospy.Subscriber('/cam1/camera/image_raw',Image,self.onImage,queue_size=1)
+		self.rate = rate
+		self.last_time = rospy.Time.now()
+	def bridge(self,imgMsg):
+		dt = (imgMsg.header.stamp - self.last_time).to_sec()
+		print(1/dt)
+		if 1/dt > self.rate:
+			return
+		self.last_time = imgMsg.header.stamp
 		try:
 			frame = np.frombuffer(imgMsg.data, dtype=np.uint8).reshape(imgMsg.height, imgMsg.width, -1)
 		except:
 			rospy.logwarn("Unable to bridge Image msg")
 			return
 		frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-		#self.inference.predict(frame)
-
+		h,w,ch = frame.shape
+		ratio = h/float(w)
+		frame = cv2.resize(frame,(640,int(640*ratio)))
+		return frame
+	def onImage(self,imgMsg):
+		frame = self.bridge(imgMsg)
+		if frame is None:
+			return
+		self.inference.predict(frame)
 		cv2.imshow("img",frame)
-		cv2.waitKey(0)
+		cv2.waitKey(1)
 
 def main():
 	rospy.init_node("accidentNet")
-	node = VisionNode("crash-car-detection")
+	node = VisionNode("crash-car-detection",1)
 	try:
 		rospy.spin()
 	except ROSInterruptException:
